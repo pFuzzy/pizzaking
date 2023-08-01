@@ -5,6 +5,7 @@ import hu.fazekas.pizzaking.dto.UserDto;
 import hu.fazekas.pizzaking.entity.User;
 import hu.fazekas.pizzaking.exception.AlreadyExistsException;
 import hu.fazekas.pizzaking.exception.NotFoundException;
+import hu.fazekas.pizzaking.mapper.UserMapper;
 import hu.fazekas.pizzaking.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,15 +16,14 @@ public class UserServiceImpl implements UserService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    UserMapper userMapper;
+
     @Override
-    public UserDto getUserById(Long id) throws NotFoundException
-    {
+    public UserDto getUserById(Long id) throws NotFoundException {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found!"));
-        return new UserDto()
-                .id(user.getId())
-                .email(user.getEmail())
-                .address(user.getAddress());
+        return userMapper.entityToDto(user);
     }
 
     @Override
@@ -31,12 +31,8 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsUserByEmail(userDto.getEmail())) {
             throw new AlreadyExistsException("User with email already exists!");
         }
-        User userEntity = new User();
 
-        userEntity.setEmail(userDto.getEmail());
-        userEntity.setAddress(userDto.getAddress());
-
-        return userRepository.save(userEntity).getId();
+        return userRepository.save(userMapper.dtoToEntity(userDto)).getId();
     }
 
     @Override
@@ -53,9 +49,7 @@ public class UserServiceImpl implements UserService {
 
         User savedUser = userRepository.save(user);
 
-        return new UserDto().id(savedUser.getId())
-                .email(savedUser.getEmail())
-                .address(savedUser.getAddress());
+        return userMapper.entityToDto(savedUser);
     }
 
     @Override

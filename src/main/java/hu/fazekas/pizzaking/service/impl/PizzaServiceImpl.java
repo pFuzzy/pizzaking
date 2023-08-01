@@ -4,6 +4,7 @@ import hu.fazekas.pizzaking.dao.PizzaRepository;
 import hu.fazekas.pizzaking.dto.PizzaDto;
 import hu.fazekas.pizzaking.entity.Pizza;
 import hu.fazekas.pizzaking.exception.NotFoundException;
+import hu.fazekas.pizzaking.mapper.PizzaMapper;
 import hu.fazekas.pizzaking.service.PizzaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,21 +15,20 @@ public class PizzaServiceImpl implements PizzaService {
     @Autowired
     PizzaRepository pizzaRepository;
 
+    @Autowired
+    PizzaMapper pizzaMapper;
+
     @Override
     public PizzaDto getPizzaById(Long id) throws NotFoundException {
         Pizza pizza = pizzaRepository.findById(id).orElseThrow(() -> new NotFoundException("Pizza not found!"));
 
-        return new PizzaDto().id(pizza.getId())
-                .type(pizza.getType());
+        return pizzaMapper.entityToDto(pizza);
     }
 
     @Override
     public Long createPizza(PizzaDto pizzaDto) {
-        Pizza pizza = new Pizza();
 
-        pizza.setType(pizzaDto.getType());
-
-        return pizzaRepository.save(pizza).getId();
+        return pizzaRepository.save(pizzaMapper.dtoToEntity(pizzaDto)).getId();
     }
 
     @Override
@@ -39,8 +39,7 @@ public class PizzaServiceImpl implements PizzaService {
 
         Pizza savedPizza = pizzaRepository.save(pizza);
 
-        return new PizzaDto().id(savedPizza.getId())
-                .type(savedPizza.getType());
+        return pizzaMapper.entityToDto(savedPizza);
     }
 
     @Override

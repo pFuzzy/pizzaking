@@ -8,6 +8,7 @@ import hu.fazekas.pizzaking.entity.Order;
 import hu.fazekas.pizzaking.entity.Pizza;
 import hu.fazekas.pizzaking.entity.User;
 import hu.fazekas.pizzaking.exception.NotFoundException;
+import hu.fazekas.pizzaking.mapper.OrderMapper;
 import hu.fazekas.pizzaking.service.OrderService;
 import hu.fazekas.pizzaking.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +26,14 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     PizzaRepository pizzaRepository;
 
+    @Autowired
+    OrderMapper orderMapper;
+
     @Override
     public OrderDto getOrderById(Long id) throws NotFoundException {
         Order order = orderRepository.findById(id).orElseThrow(() -> new NotFoundException("Order not found!"));
 
-        return new OrderDto().id(order.getId())
-                .userId(order.getUser().getId())
-                .pizzaId(order.getPizza().getId());
+        return orderMapper.entityToDto(order);
     }
 
     @Override
@@ -59,9 +61,7 @@ public class OrderServiceImpl implements OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        return new OrderDto().id(savedOrder.getId())
-                .userId(orderDto.getUserId())
-                .pizzaId(orderDto.getPizzaId());
+        return orderMapper.entityToDto(savedOrder);
     }
 
     @Override
