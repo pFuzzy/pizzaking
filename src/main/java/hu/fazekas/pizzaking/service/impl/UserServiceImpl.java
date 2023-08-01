@@ -51,9 +51,11 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDto.getEmail());
         user.setAddress(userDto.getAddress());
 
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
-        return userDto;
+        return new UserDto().id(savedUser.getId())
+                .email(savedUser.getEmail())
+                .address(savedUser.getAddress());
     }
 
     @Override
