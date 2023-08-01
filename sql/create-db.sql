@@ -9,11 +9,11 @@ CREATE TABLE pizza (
                        type varchar(255),
                        PRIMARY KEY (id)
 );
-CREATE TABLE `order` (
-                         id int not null auto_increment,
-                         user_id int,
-                         pizza_id int,
-                         PRIMARY KEY (id),
-                         FOREIGN KEY (user_id) REFERENCES user(id),
-                         FOREIGN KEY (pizza_id) REFERENCES pizza(id)
-)
+CREATE TABLE `pizza_order` (
+                               id int not null auto_increment,
+                               user_id int,
+                               pizza_id int,
+                               PRIMARY KEY (id),
+                               FOREIGN KEY (user_id) REFERENCES user(id),
+                               FOREIGN KEY (pizza_id) REFERENCES pizza(id)
+);
